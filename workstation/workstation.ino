@@ -10,11 +10,13 @@
  *    + DT  --> D3
  *    + SW  --> D4
  */
+
 #include <Wire.h>
 #include <U8g2lib.h>
 
 // OLED 128x32 I2C
 U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+
 // Rotary encoder
 #define CLK 2
 #define DT 3
@@ -22,7 +24,8 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 const char* menu_options[3] = { "first option", "second option", "third option" };
 
 // Control variables
-int shift = 0;
+volatile int shift = 0;
+volatile bool rotated = false;
 int lastCLK = 0;
 
 void setup_encoder() {
@@ -54,12 +57,12 @@ void show_menu(const char* items[3]) {
   u8g2.sendBuffer();
 }
 
-void update_menu() {
+void update_menu(int local_shift) {
   /* Menu display loop */
   const char* menu[3] = {
-    menu_options[(shift + 0) % 3],
-    menu_options[(shift + 1) % 3],
-    menu_options[(shift + 2) % 3]
+    menu_options[(local_shift + 0) % 3],
+    menu_options[(local_shift + 1) % 3],
+    menu_options[(local_shift + 2) % 3]
   };
   show_menu(menu);
 }
@@ -69,16 +72,30 @@ void update_shift() {
   int currentCLK = digitalRead(CLK);
   if (currentCLK != lastCLK) {
     if (digitalRead(DT) != currentCLK) {
-      shift = (shift + 1) % 3;
+      shift++;
     } else {
-      shift = (shift + 2) % 3;
+      shift--;
     }
+    rotated = true;
   }
   lastCLK = currentCLK;
 }
 
-
 void loop() {
-  update_menu();
-  delay(50);
+  static int displayed_shift = -1;
+
+  // Bounce protection
+  if (rotated) {
+    noInterrupts();
+    int local_shift = shift;
+    rotated = false;
+    interrupts();
+
+    local_shift = (local_shift % 3 + 3) % 3;
+
+    if (local_shift != displayed_shift) {
+      update_menu(local_shift);
+      displayed_shift = local_shift;
+    }
+  }
 }
