@@ -24,11 +24,13 @@ U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
 // Menu options
 const char* menu_options[] = { "first option", "second option", "third option", "fourth option", "fifth option" };
 const int menu_size = sizeof(menu_options) / sizeof(menu_options[0]);
+const int detentSensitivity = 2; // how sensitive is the rotary encoder
 
 // Control variables
 int shift = 0;
 int lastCLKState = 0;
 int lastDTState = 0;
+int pulseCounter = 0;
 
 void setup_encoder() {
   pinMode(CLK, INPUT);
@@ -40,6 +42,7 @@ void setup_encoder() {
 void setup() {
   u8g2.begin();
   setup_encoder();
+  show_menu(shift);
 }
 
 void show_menu(int center_index) {
@@ -67,13 +70,23 @@ void loop() {
   if (currentCLKState != lastCLKState) {
     if (currentCLKState == LOW) {
       if (currentDTState != currentCLKState) {
-        shift++;
+        pulseCounter++;
       } else {
-        shift--;
+        pulseCounter--;
       }
 
-      shift = (shift % menu_size + menu_size) % menu_size;
-      show_menu(shift);
+      if (pulseCounter >= detentSensitivity) {
+        shift++;
+        pulseCounter = 0;
+        shift = (shift % menu_size + menu_size) % menu_size;
+        show_menu(shift);
+      }
+      else if (pulseCounter <= -detentSensitivity) {
+        shift--;
+        pulseCounter = 0;
+        shift = (shift % menu_size + menu_size) % menu_size;
+        show_menu(shift);
+      }
     }
   }
   lastCLKState = currentCLKState;
