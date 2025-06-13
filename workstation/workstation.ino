@@ -9,16 +9,23 @@
  *    + CLK --> D2
  *    + DT  --> D3
  *    + SW  --> D4
+ *  * Can be changed in remotes.h:
+ * - IR emitter
+ *    + D11
+ * - Physical remote
+ *    +  A0 to A3
  */
 
 #include <Arduino.h>
 #include "rotary_encoder.h"
 #include "menu.h"
-
+#include "remotes.h"
 
 void setup() {
   setup_menu();
   setup_encoder();
+  IRRemote::begin();
+  ButtonRemote::begin();
 }
 
 void loop() {
