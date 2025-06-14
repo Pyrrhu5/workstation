@@ -2,16 +2,13 @@
 #include <Wire.h>
 
 #include <U8g2lib.h>
+#include "menu.h"
 
-// OLED 128x32 I2C
-U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0);
+constexpr const char* Menu::menuOptions[];
+constexpr uint8_t Menu::menuSize;
 
-// Menu options
-const char* menuOptions[] = { "first option", "second option", "third option", "fourth option", "fifth option" };
-const int menuSize = sizeof(menuOptions) / sizeof(menuOptions[0]);
-
-
-void show_menu(int center_index) {
+U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C Menu::u8g2(U8G2_R0);
+void Menu::show(int center_index) {
   u8g2.clearBuffer();
 
   // Previous item
@@ -30,7 +27,10 @@ void show_menu(int center_index) {
 }
 
 
-void setup_menu() {
+void Menu::begin() {
+  // OLED 128x32 I2C
   u8g2.begin();
-  show_menu(0);
+  show(0);
 }
+
+

@@ -64,5 +64,5 @@ void on_rotation(Rotation rotationEvent){
     pulseCounter = 0;
   }
   shift = (shift % menuSize + menuSize) % menuSize;
-  show_menu(shift);
+  Menu::show(shift);
 }
