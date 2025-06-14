@@ -22,7 +22,7 @@
 #include "remotes.h"
 
 void setup() {
-  setup_menu();
+  Menu::begin();
   setup_encoder();
   IRRemote::begin();
   ButtonRemote::begin();
