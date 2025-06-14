@@ -1,9 +1,11 @@
 #include <Arduino.h>
 #include "menu.h"
+#include "remotes.h"
 
 // Rotary encoder pins
 #define CLK 2
 #define DT 3
+#define BUTTON 4
 
 // how sensitive is the rotary encoder
 const int detentSensitivity = 2; 
@@ -13,11 +15,16 @@ int shift = 0;
 int pulseCounter = 0;
 int lastCLKState = 0;
 int lastDTState = 0;
+bool buttonState = HIGH;
+bool lastButtonState = HIGH;
+unsigned long lastDebounceTime = 0;
+const unsigned long debounceDelay = 50;
 
 
 void setup_encoder() {
   pinMode(CLK, INPUT);
   pinMode(DT, INPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
   lastCLKState = digitalRead(CLK);
   lastDTState = digitalRead(DT);
 }
@@ -62,4 +69,33 @@ void on_rotation(Rotation rotationEvent){
   }
   shift = (shift % Menu::menuSize + Menu::menuSize) % Menu::menuSize;
   Menu::show(shift);
+}
+
+bool click_event() {
+  int reading = digitalRead(BUTTON);
+
+  // Debounce
+  if (reading != lastButtonState) {
+    lastDebounceTime = millis();
+  }
+
+  if ((millis() - lastDebounceTime) > debounceDelay) {
+    if (reading != buttonState) {
+      buttonState = reading;
+
+      if (buttonState == LOW) {
+        lastButtonState = reading;
+        return 1;
+      }
+    }
+  }
+
+  lastButtonState = reading;
+  return 0;
+}
+
+void on_click(){
+  OptionPair selected = Menu::get_selected(shift);
+  ButtonRemote::press_button(selected.first);
+  IRRemote::press_button(selected.second);
 }

@@ -12,5 +12,7 @@ enum Rotation {
 
 Rotation rotation_event();
 void on_rotation(Rotation rotationEvent);
+bool click_event();
+void on_click();
 
 #endif
