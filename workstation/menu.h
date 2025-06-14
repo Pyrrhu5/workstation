@@ -27,6 +27,7 @@ class Menu{
     public:
         static void  show(int center_index);
         static void begin();
+        static void clear();
         static constexpr uint8_t menuSize = sizeof(menuOptions) / sizeof(menuOptions[0]);
         static OptionPair get_selected(uint8_t center_index);
 

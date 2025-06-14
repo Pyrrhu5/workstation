@@ -98,4 +98,6 @@ void on_click(){
   OptionPair selected = Menu::get_selected(shift);
   ButtonRemote::press_button(selected.first);
   IRRemote::press_button(selected.second);
+  delay(1000);
+  Menu::clear();
 }
