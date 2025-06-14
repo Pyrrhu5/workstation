@@ -14,9 +14,6 @@ int pulseCounter = 0;
 int lastCLKState = 0;
 int lastDTState = 0;
 
-// TODO You have nothing to do here, you should come from menu.cpp
-// but the fucker get only 0 as value
-const int menuSize = 5; //sizeof(menuOptions) / sizeof(menuOptions[0]);
 
 void setup_encoder() {
   pinMode(CLK, INPUT);
@@ -63,6 +60,6 @@ void on_rotation(Rotation rotationEvent){
     shift--;
     pulseCounter = 0;
   }
-  shift = (shift % menuSize + menuSize) % menuSize;
+  shift = (shift % Menu::menuSize + Menu::menuSize) % Menu::menuSize;
   Menu::show(shift);
 }
