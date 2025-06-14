@@ -17,6 +17,7 @@
  */
 
 #include <Arduino.h>
+
 #include "rotary_encoder.h"
 #include "menu.h"
 #include "remotes.h"
@@ -26,11 +27,17 @@ void setup() {
   setup_encoder();
   IRRemote::begin();
   ButtonRemote::begin();
+  // Serial.begin(9600);
+  // while (!Serial);
+  // Serial.println("Ready");
 }
 
 void loop() {
   Rotation rotationEvent = rotation_event();
   if (rotationEvent != NO_ROTATION) {
     on_rotation(rotationEvent);
+  }
+  if (click_event()){
+    on_click();
   }
 }
