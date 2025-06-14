@@ -69,3 +69,8 @@ void Menu::begin() {
 }
 
 
+void Menu::clear() {
+  u8g2.clearBuffer();
+  u8g2.sendBuffer();
+}
+
